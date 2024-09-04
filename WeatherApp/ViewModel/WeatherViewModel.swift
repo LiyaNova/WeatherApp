@@ -10,8 +10,11 @@ import Foundation
 protocol AppViewModelProtocol: AnyObject { }
 
 final class WeatherViewModel: AppViewModelProtocol {
+    let weatherFetcher: NetworkManagerProtocol
+    let locationManager: LocationManager
     
-    init(fetcher: NetworkManagerProtocol) {
-        
+    init(fetcher: NetworkManagerProtocol, locationManager: LocationManager) {
+        weatherFetcher = fetcher
+        self.locationManager = locationManager
     }
 }

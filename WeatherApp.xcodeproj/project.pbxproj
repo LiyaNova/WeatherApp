@@ -21,6 +21,7 @@
 		381CDEB32C88EAC400C0616A /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 381CDEB22C88EAC400C0616A /* AlertManager.swift */; };
 		381CDEB52C88ED2800C0616A /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 381CDEB42C88ED2800C0616A /* NetworkManager.swift */; };
 		381CDEB72C88EDC000C0616A /* WeatherFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 381CDEB62C88EDC000C0616A /* WeatherFetcher.swift */; };
+		381CDEBB2C89022000C0616A /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 381CDEBA2C89022000C0616A /* LocationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		381CDEB22C88EAC400C0616A /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
 		381CDEB42C88ED2800C0616A /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		381CDEB62C88EDC000C0616A /* WeatherFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherFetcher.swift; sourceTree = "<group>"; };
+		381CDEBA2C89022000C0616A /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +197,7 @@
 			children = (
 				381CDEB22C88EAC400C0616A /* AlertManager.swift */,
 				381CDEB42C88ED2800C0616A /* NetworkManager.swift */,
+				381CDEBA2C89022000C0616A /* LocationManager.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -331,6 +334,7 @@
 			files = (
 				381CDEAC2C88D71600C0616A /* ApplicationCoordinator.swift in Sources */,
 				381CDEAE2C88E7AE00C0616A /* WeatherViewModel.swift in Sources */,
+				381CDEBB2C89022000C0616A /* LocationManager.swift in Sources */,
 				381CDE772C88CE9700C0616A /* WeatherViewController.swift in Sources */,
 				381CDEB52C88ED2800C0616A /* NetworkManager.swift in Sources */,
 				381CDEB32C88EAC400C0616A /* AlertManager.swift in Sources */,
