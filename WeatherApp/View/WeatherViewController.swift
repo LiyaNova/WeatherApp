@@ -5,7 +5,6 @@
 //  Created by Iuliia Filimonova on 04.09.2024
 //
 
-
 import UIKit
 
 class WeatherViewController: UIViewController {
@@ -83,7 +82,7 @@ class WeatherViewController: UIViewController {
         setupUI()
         setupConstraints()
         
-        viewModel.getUserLocation()
+        viewModel.getWeather()
         bindUpdates()
     }
     

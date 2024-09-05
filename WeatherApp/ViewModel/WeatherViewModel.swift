@@ -11,8 +11,7 @@ protocol AppViewModelProtocol: AnyObject {
     var updateWeatherByCity: ((WeatherModel) -> ())? { get set }
     var onNavigationEvent: ((NavigationEvent) -> ())? { get set }
     
-    func getUserLocation()
-    func getWeatherByLocation()
+    func getWeather()
     func getWeatherByCity(_ name: String)
     func tapForLocalWeather()
 }
@@ -28,15 +27,23 @@ final class WeatherViewModel: AppViewModelProtocol {
         locationManager.status != .denied && locationManager.status != .restricted
     }
     
-    private let weatherFetcher: NetworkManagerProtocol
+    private var savedCityName: String? {
+        UserDefaults.standard.string(forKey: "cityName")
+    }
+    
     private let locationManager = LocationManager.shared
+    private let weatherFetcher: NetworkManagerProtocol
     
     init(fetcher: NetworkManagerProtocol) {
         self.weatherFetcher = fetcher
     }
     
-    func getUserLocation() {
+    func getWeather() {
         locationManager.locationManagerDelegate = self
+        
+        if !locationAvailable, let savedCityName {
+            getWeatherByCity(savedCityName)
+        }
     }
     
     func getWeatherByCity(_ name: String) {
@@ -50,7 +57,11 @@ final class WeatherViewModel: AppViewModelProtocol {
         }
     }
     
-    func getWeatherByLocation() {
+    func tapForLocalWeather() {
+        locationAvailable ? getWeatherByLocation() : onNavigationEvent?(.locationAlert)
+     }
+    
+    private func getWeatherByLocation() {
         guard let locationLat, let locationLon else { return }
         
         weatherFetcher.fetchData(type: WeatherData.self, url: .userLocation(lon: locationLat, lat: locationLon)) { [weak self] result in
@@ -63,14 +74,13 @@ final class WeatherViewModel: AppViewModelProtocol {
         }
     }
     
-    func tapForLocalWeather() {
-        locationAvailable ? getWeatherByLocation() : onNavigationEvent?(.locationAlert)
-     }
-    
     private func processData(for data: WeatherData) {
+        UserDefaults.standard.set(data.name, forKey: "cityName")
+        
         let iconName = data.weather.first?.icon
         let image = weatherFetcher.getImage(for: iconName)
         let model = WeatherModel(cityName: data.name, temperature: data.main.temp, icon: image)
+        
         updateWeatherByCity?(model)
     }
 }
@@ -80,6 +90,6 @@ extension WeatherViewModel: LocationManagerDelegate {
         locationLat = latitude
         locationLon = longitude
         
-        getWeatherByLocation()
+        savedCityName != nil ? getWeatherByCity(savedCityName!) : getWeatherByLocation()
     }
 }
