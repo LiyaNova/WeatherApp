@@ -12,15 +12,14 @@ class WeatherViewController: UIViewController {
     
     private let searchTextField: UITextField = {
         let searchTextField = UITextField()
-        searchTextField.translatesAutoresizingMaskIntoConstraints = false
         searchTextField.backgroundColor = .white
+        searchTextField.placeholder = "Type city name"
         
         return searchTextField
     }()
     
     private let locationBtn: UIButton = {
         let locationBtn = UIButton()
-        locationBtn.translatesAutoresizingMaskIntoConstraints = false
         locationBtn.setImage(UIImage(systemName:"location.circle.fill"), for: .normal)
         
         return locationBtn
@@ -53,8 +52,18 @@ class WeatherViewController: UIViewController {
         let tempStack = UIStackView()
         tempStack.translatesAutoresizingMaskIntoConstraints = false
         tempStack.axis = .horizontal
+        tempStack.spacing = 10
         
         return tempStack
+    }()
+    
+    private let cityLbl: UILabel = {
+        let cityLbl = UILabel()
+        cityLbl.translatesAutoresizingMaskIntoConstraints = false
+        cityLbl.font = UIFont.systemFont(ofSize: 35, weight: .bold)
+        cityLbl.textAlignment = .center
+        
+        return cityLbl
     }()
     
     private let viewModel: AppViewModelProtocol
@@ -71,15 +80,33 @@ class WeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
         setupConstraints()
         
         viewModel.getUserLocation()
+        bindUpdates()
+    }
+    
+    private func bindUpdates() {
+        viewModel.updateWeatherByCity = { [weak self] model in
+            DispatchQueue.main.async {
+                self?.tempLbl.text = model.temperatureString
+                self?.cityLbl.text = model.cityName
+                
+                guard let icon = model.icon else { return }
+                self?.tempImg.image = UIImage(data: icon)
+            }
+        }
+    }
+    
+    @objc private func getLocalWeather() {
+        viewModel.getWeatherByLocation()
     }
     
     private func setupUI() {
         view.backgroundColor = .lightGray
+        searchTextField.delegate = self
+        locationBtn.addTarget(self, action: #selector(getLocalWeather), for: .touchUpInside)
     
         searchStack.addArrangedSubview(locationBtn)
         searchStack.addArrangedSubview(searchTextField)
@@ -87,6 +114,7 @@ class WeatherViewController: UIViewController {
         tempStack.addArrangedSubview(tempImg)
         view.addSubview(searchStack)
         view.addSubview(tempStack)
+        view.addSubview(cityLbl)
     }
     
     private func setupConstraints() {
@@ -99,8 +127,32 @@ class WeatherViewController: UIViewController {
             searchStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             tempStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 40),
             tempStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -40),
-            tempStack.topAnchor.constraint(equalTo: searchStack.bottomAnchor, constant: 20)
+            tempStack.topAnchor.constraint(equalTo: searchStack.bottomAnchor, constant: 10),
+            cityLbl.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 40),
+            cityLbl.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -40),
+            cityLbl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40)
         ])
     }
 }
 
+extension WeatherViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        searchTextField.endEditing(true)
+    }
+
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        if textField.text != "" {
+            return true
+        } else {
+            textField.placeholder = "Type city name"
+            return false
+        }
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let city = searchTextField.text else { return }
+        
+        viewModel.getWeatherByCity(city)
+        searchTextField.text = ""
+    }
+}

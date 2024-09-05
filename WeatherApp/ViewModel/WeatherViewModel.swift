@@ -8,11 +8,16 @@
 import Foundation
 
 protocol AppViewModelProtocol: AnyObject { 
+    var updateWeatherByCity: ((WeatherModel) -> ())? { get set }
+    
     func getUserLocation()
+    func getWeatherByLocation()
     func getWeatherByCity(_ name: String)
 }
 
 final class WeatherViewModel: AppViewModelProtocol {
+    var updateWeatherByCity: ((WeatherModel) -> ())?
+    
     private let weatherFetcher: NetworkManagerProtocol
     private let locationManager = LocationManager.shared
     
@@ -31,9 +36,7 @@ final class WeatherViewModel: AppViewModelProtocol {
         weatherFetcher.fetchData(type: WeatherData.self, url: .cityName(name: name)) { [weak self] result in
             switch result {
             case .success(let data):
-                let model = WeatherModel(cityName: data.name, temperature: data.main.temp, icon: data.weather.first?.icon)
-                self?.getImage(for: model.icon)
-                print(model)
+                self?.processData(for: data)
             case .failure(let error):
                 print(error)
             }
@@ -46,19 +49,18 @@ final class WeatherViewModel: AppViewModelProtocol {
         weatherFetcher.fetchData(type: WeatherData.self, url: .userLocation(lon: locationLat, lat: locationLon)) { [weak self] result in
             switch result {
             case .success(let data):
-                let model = WeatherModel(cityName: data.name, temperature: data.main.temp, icon: data.weather.first?.icon)
-                self?.getImage(for: model.icon)
-                print(data)
+                self?.processData(for: data)
             case .failure(let error):
                 print(error)
             }
         }
     }
     
-    func getImage(for name: String?) {
-        guard let name else { return }
-        let image = weatherFetcher.getImage(for: name)
-        print(image)
+    private func processData(for data: WeatherData) {
+        let iconName = data.weather.first?.icon
+        let image = weatherFetcher.getImage(for: iconName)
+        let model = WeatherModel(cityName: data.name, temperature: data.main.temp, icon: image)
+        updateWeatherByCity?(model)
     }
 }
 

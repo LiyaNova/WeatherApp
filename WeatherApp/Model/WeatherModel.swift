@@ -10,7 +10,7 @@ import Foundation
 struct WeatherModel {
     let cityName: String
     let temperature: Double
-    let icon: String?
+    let icon: Data?
 
     var temperatureString: String {
         String(format: "%.1f", temperature)

@@ -9,7 +9,7 @@ import Foundation
 
 protocol NetworkManagerProtocol {
     func fetchData<T: Decodable>(type: T.Type, url: Endpoint, completion: @escaping (Result<T, NetworkError>) -> Void)
-    func getImage(for name: String) -> Data?
+    func getImage(for name: String?) -> Data?
 }
 
 final class NetworkManager: NetworkManagerProtocol {
@@ -39,8 +39,11 @@ final class NetworkManager: NetworkManagerProtocol {
         task.resume()
     }
     
-    func getImage(for name: String) -> Data? {
+    func getImage(for name: String?) -> Data? {
+        guard let name else { return nil }
+        
         let endpoint = Endpoint.imgURL(name: name).path()
+        
         guard let url = URL(string: endpoint) else { return nil }
         
         return try? Data(contentsOf: url)
