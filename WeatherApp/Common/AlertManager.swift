@@ -8,17 +8,39 @@
 import UIKit
 
 protocol AlertManagerProtocol: AnyObject {
-    func showAlert(ofType type: AlertType, on viewController: UIViewController)
+    func showAlert(ofType type: AlertType, on viewController: UIViewController?)
 }
 
 enum AlertType {
-    case invalidField(String)
-    case invalidCredentials
-    case noInternetConnection
+    case networkIssue(String)
+    case locationUnavailable
 }
 
 class AlertManager: AlertManagerProtocol {
-    func showAlert(ofType type: AlertType, on viewController: UIViewController) {
-        //TODO
+    func showAlert(ofType type: AlertType, on viewController: UIViewController?) {
+        let alert: UIAlertController
+        
+        switch type {
+        case .networkIssue(let text):
+            alert = createNetworkIssueAlert(text)
+        case .locationUnavailable:
+            alert = locationUnavailableAlert()
+        }
+
+        viewController?.present(alert, animated: true)
+    }
+}
+
+private extension AlertManager {
+    func createNetworkIssueAlert(_ fieldText: String) -> UIAlertController {
+        let alert = UIAlertController(title: "", message: fieldText, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        return alert
+    }
+    
+    func locationUnavailableAlert() -> UIAlertController {
+        let alert = UIAlertController(title: "Sorry", message: "We need your location to get the current weather. Change your settings, please", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        return alert
     }
 }

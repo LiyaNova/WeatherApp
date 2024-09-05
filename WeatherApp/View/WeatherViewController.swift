@@ -99,15 +99,15 @@ class WeatherViewController: UIViewController {
         }
     }
     
-    @objc private func getLocalWeather() {
-        viewModel.getWeatherByLocation()
+    @objc private func getLocalWeatherIfAvailable() {
+        viewModel.tapForLocalWeather()
     }
     
     private func setupUI() {
         view.backgroundColor = .lightGray
         searchTextField.delegate = self
-        locationBtn.addTarget(self, action: #selector(getLocalWeather), for: .touchUpInside)
-    
+        locationBtn.addTarget(self, action: #selector(getLocalWeatherIfAvailable), for: .touchUpInside)
+        
         searchStack.addArrangedSubview(locationBtn)
         searchStack.addArrangedSubview(searchTextField)
         tempStack.addArrangedSubview(tempLbl)
@@ -139,7 +139,7 @@ extension WeatherViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.endEditing(true)
     }
-
+    
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         if textField.text != "" {
             return true
@@ -148,7 +148,7 @@ extension WeatherViewController: UITextFieldDelegate {
             return false
         }
     }
-
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let city = searchTextField.text else { return }
         

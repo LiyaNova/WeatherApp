@@ -9,20 +9,27 @@ import Foundation
 
 protocol AppViewModelProtocol: AnyObject { 
     var updateWeatherByCity: ((WeatherModel) -> ())? { get set }
+    var onNavigationEvent: ((NavigationEvent) -> ())? { get set }
     
     func getUserLocation()
     func getWeatherByLocation()
     func getWeatherByCity(_ name: String)
+    func tapForLocalWeather()
 }
 
 final class WeatherViewModel: AppViewModelProtocol {
+    var onNavigationEvent: ((NavigationEvent) -> ())?
     var updateWeatherByCity: ((WeatherModel) -> ())?
-    
-    private let weatherFetcher: NetworkManagerProtocol
-    private let locationManager = LocationManager.shared
     
     private var locationLon: Double?
     private var locationLat: Double?
+    
+    private var locationAvailable: Bool {
+        locationManager.status != .denied && locationManager.status != .restricted
+    }
+    
+    private let weatherFetcher: NetworkManagerProtocol
+    private let locationManager = LocationManager.shared
     
     init(fetcher: NetworkManagerProtocol) {
         self.weatherFetcher = fetcher
@@ -38,7 +45,7 @@ final class WeatherViewModel: AppViewModelProtocol {
             case .success(let data):
                 self?.processData(for: data)
             case .failure(let error):
-                print(error)
+                self?.onNavigationEvent?(.networkAlert(error.description))
             }
         }
     }
@@ -51,10 +58,14 @@ final class WeatherViewModel: AppViewModelProtocol {
             case .success(let data):
                 self?.processData(for: data)
             case .failure(let error):
-                print(error)
+                self?.onNavigationEvent?(.networkAlert(error.description))
             }
         }
     }
+    
+    func tapForLocalWeather() {
+        locationAvailable ? getWeatherByLocation() : onNavigationEvent?(.locationAlert)
+     }
     
     private func processData(for data: WeatherData) {
         let iconName = data.weather.first?.icon
@@ -70,9 +81,5 @@ extension WeatherViewModel: LocationManagerDelegate {
         locationLon = longitude
         
         getWeatherByLocation()
-    }
-    
-    func askAgainLocationPermission() {
-        //TODO
     }
 }

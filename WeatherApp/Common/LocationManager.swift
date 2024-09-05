@@ -9,12 +9,15 @@ import Foundation
 import CoreLocation
 
 protocol LocationManagerDelegate: AnyObject {
-    func askAgainLocationPermission()
     func useUserLocation(latitude: Double?, longitude: Double?)
 }
 
 final class LocationManager: NSObject, CLLocationManagerDelegate {
     weak var locationManagerDelegate: LocationManagerDelegate?
+    
+    var status: CLAuthorizationStatus {
+        manager.authorizationStatus
+    }
     
     static let shared = LocationManager()
     private let manager = CLLocationManager()
@@ -42,8 +45,6 @@ extension LocationManager {
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
             enableLocationFeatures()
-        case .restricted, .denied:
-            locationManagerDelegate?.askAgainLocationPermission()
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
         default:
