@@ -17,7 +17,7 @@ final class ApplicationCoordinator: CoordinatorProtocol {
     }
     
     func start() {
-        let viewModel = WeatherViewModel(fetcher: WeatherFetcher(), locationManager: LocationManager())
+        let viewModel = WeatherViewModel(fetcher: NetworkManager())
         mainViewController = WeatherViewController(viewModel: viewModel)
       
         window.rootViewController = mainViewController

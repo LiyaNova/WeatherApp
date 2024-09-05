@@ -4,13 +4,16 @@
 //
 //  Created by Iuliia Filimonova on 04.09.2024
 //
-    
+
 
 import UIKit
 
 class WeatherViewController: UIViewController {
     
+    let viewModel: AppViewModelProtocol
+    
     init(viewModel: AppViewModelProtocol) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -21,6 +24,13 @@ class WeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setUI()
+        viewModel.getUserLocation()
+        
+    }
+    
+    private func setUI() {
         view.backgroundColor = .cyan
     }
 }

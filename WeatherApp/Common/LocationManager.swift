@@ -4,24 +4,26 @@
 //
 //  Created by Iuliia Filimonova on 04.09.2024
 //
-    
+
 import Foundation
 import CoreLocation
 
 protocol LocationManagerDelegate: AnyObject {
-    func askLocationPermission()
+    func askAgainLocationPermission()
     func useUserLocation(latitude: Double?, longitude: Double?)
 }
 
 final class LocationManager: NSObject, CLLocationManagerDelegate {
     weak var locationManagerDelegate: LocationManagerDelegate?
+    
+    static let shared = LocationManager()
     private let manager = CLLocationManager()
-
-     override init() {
+    
+    private override init() {
         super.init()
-         manager.delegate = self
+        manager.delegate = self
     }
-
+    
     private func enableLocationFeatures() {
         manager.desiredAccuracy = kCLLocationAccuracyBest
         manager.distanceFilter = 300
@@ -35,20 +37,20 @@ extension LocationManager {
         locationManagerDelegate?.useUserLocation(latitude: coordinates.coordinate.latitude,
                                                  longitude: coordinates.coordinate.longitude)
     }
-
+    
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
             enableLocationFeatures()
         case .restricted, .denied:
-            locationManagerDelegate?.askLocationPermission()
+            locationManagerDelegate?.askAgainLocationPermission()
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
         default:
             break
         }
     }
-
+    
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         if (error as? CLError)?.code == .denied {
             manager.stopUpdatingLocation()
