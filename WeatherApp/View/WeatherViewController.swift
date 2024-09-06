@@ -133,6 +133,7 @@ class WeatherViewController: UIViewController {
     }
 }
 
+//MARK: - UITextFieldDelegate
 extension WeatherViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.endEditing(true)

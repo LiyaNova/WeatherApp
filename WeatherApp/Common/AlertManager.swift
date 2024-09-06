@@ -31,6 +31,7 @@ class AlertManager: AlertManagerProtocol {
     }
 }
 
+//MARK: - AlertManager extension
 private extension AlertManager {
     func createNetworkIssueAlert(_ fieldText: String) -> UIAlertController {
         let alert = UIAlertController(title: "", message: fieldText, preferredStyle: .alert)

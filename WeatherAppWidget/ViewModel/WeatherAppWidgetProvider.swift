@@ -22,7 +22,6 @@ struct WeatherAppWidgetProvider: TimelineProvider {
     }
     
     //MARK: - FetchData
-    
     let networkManager: NetworkManagerProtocol
     
     init(networkManager: NetworkManagerProtocol = NetworkManager()) {

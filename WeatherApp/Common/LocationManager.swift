@@ -34,6 +34,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     }
 }
 
+//MARK: - LocationManager extension
 extension LocationManager {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let coordinates = locations.last else { return }

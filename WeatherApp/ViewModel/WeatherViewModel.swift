@@ -87,6 +87,7 @@ final class WeatherViewModel: AppViewModelProtocol {
     }
 }
 
+//MARK: - LocationManagerDelegate
 extension WeatherViewModel: LocationManagerDelegate {
     func useUserLocation(latitude: Double?, longitude: Double?) {
         locationLat = latitude
