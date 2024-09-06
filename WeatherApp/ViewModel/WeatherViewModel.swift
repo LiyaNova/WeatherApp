@@ -12,8 +12,9 @@ protocol AppViewModelProtocol: AnyObject {
     var onNavigationEvent: ((NavigationEvent) -> ())? { get set }
     
     func getWeather()
-    func getWeatherByCity(_ name: String)
     func tapForLocalWeather()
+    func getWeatherByCity(_ name: String)
+    func getWeatherByLocation(locationLon: Double?, locationLat: Double?)    
 }
 
 final class WeatherViewModel: AppViewModelProtocol {
@@ -47,6 +48,8 @@ final class WeatherViewModel: AppViewModelProtocol {
     }
     
     func getWeatherByCity(_ name: String) {
+        UserDefaults.standard.set(name, forKey: "cityName")
+        
         weatherFetcher.fetchData(type: WeatherData.self, url: .cityName(name: name)) { [weak self] result in
             switch result {
             case .success(let data):
@@ -58,10 +61,11 @@ final class WeatherViewModel: AppViewModelProtocol {
     }
     
     func tapForLocalWeather() {
-        locationAvailable ? getWeatherByLocation() : onNavigationEvent?(.locationAlert)
+        locationAvailable ? getWeatherByLocation(locationLon: locationLon, locationLat: locationLat) :
+                            onNavigationEvent?(.locationAlert)
      }
     
-    private func getWeatherByLocation() {
+    func getWeatherByLocation(locationLon: Double?, locationLat: Double?) {
         guard let locationLat, let locationLon else { return }
         
         weatherFetcher.fetchData(type: WeatherData.self, url: .userLocation(lon: locationLat, lat: locationLon)) { [weak self] result in
@@ -75,8 +79,6 @@ final class WeatherViewModel: AppViewModelProtocol {
     }
     
     private func processData(for data: WeatherData) {
-        UserDefaults.standard.set(data.name, forKey: "cityName")
-        
         let iconName = data.weather.first?.icon
         let image = weatherFetcher.getImage(for: iconName)
         let model = WeatherModel(cityName: data.name, temperature: data.main.temp, icon: image)
@@ -90,6 +92,7 @@ extension WeatherViewModel: LocationManagerDelegate {
         locationLat = latitude
         locationLon = longitude
         
-        savedCityName != nil ? getWeatherByCity(savedCityName!) : getWeatherByLocation()
+        savedCityName != nil ? getWeatherByCity(savedCityName!) : 
+                               getWeatherByLocation(locationLon: locationLon, locationLat: locationLat)
     }
 }

@@ -7,8 +7,7 @@
 
 import UIKit
 
-class WeatherViewController: UIViewController {
-    
+class WeatherViewController: UIViewController {    
     private let searchTextField: UITextField = {
         let searchTextField = UITextField()
         searchTextField.backgroundColor = .white
