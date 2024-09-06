@@ -22,7 +22,7 @@ final class NetworkManager: NetworkManagerProtocol {
         }
         
         let task = URLSession.shared.dataTask(with: url) {(data , response, error) in
-            if let error = error as? URLError {
+            if let _ = error as? URLError {
                 completion(.failure(.urlError))
             } else if  let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
                 completion(.failure(.requestError))
