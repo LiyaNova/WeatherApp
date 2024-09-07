@@ -16,7 +16,7 @@ enum Endpoint {
     func path() -> String {
         switch self {
         case .baseURL:
-            return "https://api.openweathermap.org/data/2.5/weather?appid=8c0168c5416fcfca06b117527ab9c30f&units=metric"
+            return "https://api.openweathermap.org/data/2.5/weather?appid={YOUR API KEY}&units=metric"
         case .cityName(name: let cityName):
             return "&q=\(cityName)"
         case .userLocation(lon: let lon, lat: let lat):
