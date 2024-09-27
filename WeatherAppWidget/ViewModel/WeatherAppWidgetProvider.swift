@@ -39,10 +39,9 @@ struct WeatherAppWidgetProvider: TimelineProvider {
         getWeather { model in
             var entries = [WeatherAppWidgetEntry]()
             
-            for dayOffset in 0..<7 {
-                let entryDate = Calendar.current.date(byAdding: .day, value: dayOffset, to: Date())!
-                let startOfDate = Calendar.current.startOfDay(for: entryDate)
-                let entry = WeatherAppWidgetEntry(date: startOfDate, weatherModel: model)
+            for hourOffset in 0..<24 {
+                let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: Date())!
+                let entry = WeatherAppWidgetEntry(date: entryDate, weatherModel: model)
                 entries.append(entry)
             }
             

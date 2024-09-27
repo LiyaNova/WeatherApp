@@ -40,7 +40,7 @@ final class WeatherViewModel: AppViewModelProtocol {
     }
     
     func getWeather() {
-        locationManager.locationManagerDelegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(useUserLocation(coordinates:)), name: .useUserLocation, object: nil)
         
         if !locationAvailable, let savedCityName {
             getWeatherByCity(savedCityName)
@@ -85,15 +85,16 @@ final class WeatherViewModel: AppViewModelProtocol {
         
         updateWeatherByCity?(model)
     }
-}
-
-//MARK: - LocationManagerDelegate
-extension WeatherViewModel: LocationManagerDelegate {
-    func useUserLocation(latitude: Double?, longitude: Double?) {
-        locationLat = latitude
-        locationLon = longitude
-        
-        savedCityName != nil ? getWeatherByCity(savedCityName!) : 
-                               getWeatherByLocation(locationLon: locationLon, locationLat: locationLat)
+    
+    @objc private func useUserLocation(coordinates: Notification) {
+        if let latitude = coordinates.userInfo?["latitude"] as? Double,
+           let longitude =  coordinates.userInfo?["longitude"] as? Double {
+            locationLat = latitude
+            locationLon = longitude
+            
+            savedCityName != nil ? getWeatherByCity(savedCityName!) :
+            getWeatherByLocation(locationLon: locationLon, locationLat: locationLat)
+            
+        }
     }
 }

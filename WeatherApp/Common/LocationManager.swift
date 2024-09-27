@@ -8,18 +8,13 @@
 import Foundation
 import CoreLocation
 
-protocol LocationManagerDelegate: AnyObject {
-    func useUserLocation(latitude: Double?, longitude: Double?)
-}
-
 final class LocationManager: NSObject, CLLocationManagerDelegate {
-    weak var locationManagerDelegate: LocationManagerDelegate?
+    static let shared = LocationManager()
     
     var status: CLAuthorizationStatus {
         manager.authorizationStatus
     }
     
-    static let shared = LocationManager()
     private let manager = CLLocationManager()
     
     private override init() {
@@ -38,8 +33,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
 extension LocationManager {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let coordinates = locations.last else { return }
-        locationManagerDelegate?.useUserLocation(latitude: coordinates.coordinate.latitude,
-                                                 longitude: coordinates.coordinate.longitude)
+        
+        let userInfo = ["latitude": coordinates.coordinate.latitude, "longitude": coordinates.coordinate.longitude]
+        NotificationCenter.default.post(name: .useUserLocation, object: nil, userInfo: userInfo)
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -59,4 +55,9 @@ extension LocationManager {
             manager.stopMonitoringSignificantLocationChanges()
         }
     }
+}
+
+//MARK: - Notification name
+extension Notification.Name {
+    static let useUserLocation = Notification.Name("useUserLocation")
 }

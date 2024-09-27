@@ -27,7 +27,9 @@ class AlertManager: AlertManagerProtocol {
             alert = locationUnavailableAlert()
         }
 
-        viewController?.present(alert, animated: true)
+        DispatchQueue.main.async { 
+            viewController?.present(alert, animated: true)
+        }
     }
 }
 

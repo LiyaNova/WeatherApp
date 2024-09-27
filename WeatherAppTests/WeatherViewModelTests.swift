@@ -10,7 +10,6 @@ import XCTest
 
 /*I'm not satisfied with the tests. I feel more confident with MVP testing.
  I think I could make ViewModel more testable, but it would become less readable, then.
- Because of lack of time, I chose readability
  */
 final class WeatherViewModelTests: XCTestCase {
     var mockNetworkManager: MockNetworkManager!
